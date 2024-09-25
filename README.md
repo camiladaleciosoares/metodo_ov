@@ -1,7 +1,7 @@
 # Método OV
 ## Automação do Método OV
 
-Método OV V000_2 - Básico - WDO
+Método OV V000_3 - Básico - WDO
 
 V000_1 --> V000 + implementando parâmetros (inputs)
 
@@ -10,6 +10,12 @@ V000_2 --> V000_1 + implementação de ticks no lugar de pontos
 	- ticksLucro = 12 ticks (60 reais)
 	- BEmin = 6 ticks (3 pontos --> 30 reais)
 	- BEmax = 40 ticks (20 pontos --> 200 reais)
+
+ V000_3 --> V000_2 + alterações 
+ 
+ 	- Troca de contaOperações por (not HasPosition)
+	- Alteração de stop loss para tipo de ordem ToCoverStop no valor da abertura da BE +/- 1 tick
+	- Correção ordem ToCoverStop
 
 
 OBJETIVO: Encontrar Barras Elefantes (BE)
@@ -24,8 +30,10 @@ PARÂMETROS:
 
 	- fator BE = 2.0
 	- hora saída = 1500
-	- número máximo de contratos = 2
+	- número de contratos = 2
  	- pegar lucros = 12 ticks (6 pontos)
+  	- ticks de stop inicial = 1 tick (0,5 ponto)
+   	- ticks máximo ordem stop = 40 ticks (20 pontos)
   	- Tamanho BE >= 6 ticks (3 pontos) E Tamanho BE <= 40 ticks (20 pontos)
 
  VARIÁVEIS/AUXILIARES:
