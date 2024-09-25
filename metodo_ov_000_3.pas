@@ -1,12 +1,14 @@
-//Metodo_OV_000_2
+//Metodo_OV_000_3
 
 input
 fatorBE(2);   		//Fator para determinar se é uma BE
 horaSaida(1500);	//Horário de saída de todas as operações
 qnt(2); 			//Quantidade inicial de contratos/lotes
 ticksLucro(12); 	//Ticks para pegar lucros
+ticksStop(1);		//Ticks para stop além da abertura da BE
 BEmin(6);			//tamanho mínimo BE
 BEmax(40);			//tamanho máximo BE
+maxStop(40);		//ticks para limite máximo da ordem de stop
 
 var
   tamanhoBarra : Float;
@@ -47,88 +49,79 @@ begin
   abaixo200 := Close < ma200;
   abaixo20 := Close < ma20;
   pegarLucros := ticksLucro * MinPriceIncrement;
-	if (ContadorDeCandle = 1) then
-		begin
-			Paintbar(clRed);
-			contaOperacao := 0;
-		end;
+  
 	if Time < horaSaida then
 		begin
-			//if (contaOperacao = 0) then
-				//begin
-					if barraBear and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
+			if barraBear and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
+				begin
+					Paintbar(clFuchsia);
+					if abaixo200 and (not HasPosition) then
 						begin
-							Paintbar(clFuchsia);
-								if abaixo200 and (contaOperacao = 0) then
-									begin
-										SellShortAtMarket(qnt);
-										PrVen := Close;//SellPrice;
-										inicioStop := Open;
-										contaOperacao := contaOperacao + 1;
-									end;
+							SellShortAtMarket(qnt);
+							PrVen := Close;
+							inicioStop := Open + (ticksStop * MinPriceIncrement);
 						end;
-					if barraBull and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
+				end;
+			if barraBull and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
+				begin
+					Paintbar(clGreen);
+					if ( not abaixo200) and (not HasPosition) then
 						begin
-							Paintbar(clGreen);
-								if ( not abaixo200) and (contaOperacao = 0) then
-									begin
-										BuyAtMarket(qnt);
-										PrCom := Close;//BuyPrice;
-										inicioStop := Open;
-										contaOperacao := contaOperacao + 1;
-									end;
+							BuyAtMarket(qnt);
+							PrCom := Close;
+							inicioStop := Open - (ticksStop * MinPriceIncrement);
 						end;
-				//end
-			//else
-				//begin
-					if IsSold then
+				end;
+			if IsSold then
+				begin
+					if (Close > PrVen) then
 						begin
-							if (Close >= inicioStop) then
+							BuyToCoverStop(inicioStop,(inicioStop + (maxStop * MinPriceIncrement)),Abs(Position));
+						end;
+					if (Abs(Position) > 1) then
+						begin
+							BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 1));
+						end
+					else 
+						begin
+							if ((Close > ma20) and (Close[1] > ma20[1])) then
 								begin
 									BuyToCoverAtMarket(Abs(Position));
-									contaOperacao := 0;
-								end;
-							if (Abs(Position) > 1) then
-								begin
-									BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 1));
 								end
-							else 
+							else //if (Close > (PrVen - pegarLucros)) then
 								begin
-									if ((Close > ma20) and (Close[1] > ma20[1])) or (Close >= PrVen) then
-										begin
-											BuyToCoverAtMarket(Abs(Position));
-											contaOperacao := 0;
-										end;
+									BuyToCoverStop(PrVen,(PrVen + ticksStop),Abs(Position));
 								end;
 						end;
-					if IsBought then
+				end;
+			if IsBought then
+				begin
+					if (Close < PrCom) then
 						begin
-							if (Close <= inicioStop) then
+							SellToCoverStop(inicioStop,(inicioStop - (maxStop * MinPriceIncrement)),Abs(Position));
+						end;
+					if (Abs(Position) > 1) then
+						begin
+							SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 1));
+						end
+					else 
+						begin
+							if ((Close < ma20) and (Close[1] < ma20[1])) then
 								begin
 									SellToCoverAtMarket(Abs(Position));
-									contaOperacao := 0;
-								end;
-							if (Abs(Position) > 1) then
-								begin
-									SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 1));
 								end
-							else 
+							else //if (Close < (PrCom + pegarLucros)) then
 								begin
-									if ((Close < ma20) and (Close[1] < ma20[1])) or (Close <= PrCom) then
-										begin
-											SellToCoverAtMarket(Abs(Position));
-											contaOperacao := 0;
-										end;
+									SellToCoverStop(PrCom,(PrCom - ticksStop),Abs(Position));
 								end;
 						end;
-				//end;
+				end;
 		end
 	else 
 		begin
 			ClosePosition;
 			CancelPendingOrders;
-			contaOperacao := 0;
-	end;
+		end;
 Plot(ma200);
 Plot2(ma20);
 SetPlotColor(2,clFuchsia);
@@ -138,7 +131,4 @@ Plot4(PrVen - pegarLucros);
 SetPlotColor(4,clWhite);
 Plot5(PrCom + pegarLucros);
 SetPlotColor(5,clYellow);
-//Plot (Abs(Position));
-//Plot6 (ContadorDeCandle);
-//Plot7 (contaOperacao);
-end
+end;
