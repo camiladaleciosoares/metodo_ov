@@ -1,10 +1,16 @@
-//Metodo_OV_000
+//Metodo_OV_000_1
+
+input
+fatorBE(2);   		//Fator para determinar se é uma BE
+horaSaida(1500);	//Horário de saída de todas as operações
+qnt(2); 			//Quantidade inicial de contratos/lotes
+pegarLucros(6); 	//Pontos para pegar lucros
+BEmin(3);			//tamanho mínimo BE
+BEmax(20);			//tamanho máximo BE
 
 var
   tamanhoBarra : Float;
   //Tamanho do corpo de uma barra
-  fatorBE      : Float;
-  //Fator para determinar se é uma BE
   BEteste      : Boolean;
   //Teste para verificar se é uma BE
   ma200        : Float;
@@ -15,17 +21,12 @@ var
   //Preço de compra
   PrVen        : Float;
   //Preço de venda
-  pegarLucros  : Float;
-  //Pontos para pegar lucros
   inicioStop   : Float;
   //Pontos para stop inicial
-  qnt          : Integer;
-  //Quantidade inicial de contratos/lotes
-  horaSaida    : Integer;
-  //Horário de saída de todas as operações
   beIndex      : Integer;
   //Quantidade de barras para analisar se é uma barra elefante
-  contaOperacao    : Integer;
+  contaOperacao: Integer;
+  //Contador de operações
   barraBull    : Boolean;
   //verificar se é uma barra verde
   barraBear    : Boolean;
@@ -36,10 +37,6 @@ var
   //verificar se está abaixo da 20MA
 begin
   tamanhoBarra := Abs(Open - Close);
-  fatorBE := 2;
-  horaSaida := 1500;
-  qnt := 2;
-  pegarLucros := 6;
   ma200 := Media(200,Close);
   ma20 := Media(20,Close);
   BEteste := ((tamanhoBarra >= (fatorBE * tamanhoBarra[5])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[4])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[3])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[2])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[1])));
@@ -56,7 +53,7 @@ begin
 		begin
 			//if (contaOperacao = 0) then
 				//begin
-					if barraBear and BEteste and (tamanhoBarra >= 3) and (tamanhoBarra <= 20) then
+					if barraBear and BEteste and (tamanhoBarra >= BEmin) and (tamanhoBarra <= BEmax) then
 						begin
 							Paintbar(clFuchsia);
 								if abaixo200 and (contaOperacao = 0) then
@@ -67,7 +64,7 @@ begin
 										contaOperacao := contaOperacao + 1;
 									end;
 						end;
-					if barraBull and BEteste and (tamanhoBarra >= 3) and (tamanhoBarra <= 20) then
+					if barraBull and BEteste and (tamanhoBarra >= BEmin) and (tamanhoBarra <= BEmax) then
 						begin
 							Paintbar(clGreen);
 								if ( not abaixo200) and (contaOperacao = 0) then
