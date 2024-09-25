@@ -1,10 +1,11 @@
-//Metodo_OV_000_4
+//Metodo_OV_001_0
 
 input
 fatorBE(2);   		//Fator para determinar se é uma BE
 horaSaida(1500);	//Horário de saída de todas as operações
-qnt(2); 			//Quantidade inicial de contratos/lotes
-ticksLucro(12); 	//Ticks para pegar lucros
+qnt(3); 			//Quantidade inicial de contratos/lotes
+ticksLucro(12); 	//Ticks para pegar lucros parcial 1
+ticksLucro2(16); 	//Ticks para pegar lucros parcial 2
 ticksStop(1);		//Ticks para stop além da abertura da BE
 BEmin(6);			//tamanho mínimo BE
 BEmax(40);			//tamanho máximo BE
@@ -39,6 +40,8 @@ var
   //verificar se está abaixo da 20MA
   pegarLucros  : Float;
   //Pontos para pegar lucros
+  pegarLucros2  : Float;
+  //Pontos para pegar lucros
 begin
   tamanhoBarra := Abs(Open - Close);
   ma200 := Media(200,Close);
@@ -49,6 +52,7 @@ begin
   abaixo200 := Close < ma200;
   abaixo20 := Close < ma20;
   pegarLucros := ticksLucro * MinPriceIncrement;
+  pegarLucros2 := ticksLucro2 * MinPriceIncrement;
   
 	if Time < horaSaida then
 		begin
@@ -78,19 +82,26 @@ begin
 						begin
 							BuyToCoverStop(inicioStop,(inicioStop + (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
-					if (Abs(Position) > 1) then
+					if (Abs(Position) > 2) then
 						begin
-							BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 1));
+							BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 2));
 						end
 					else 
 						begin
-							if ((Close > ma20) and (Close[1] > ma20[1])) then
+							if (Abs(Position) = 2) then
 								begin
-									BuyToCoverAtMarket(Abs(Position));
+									BuyToCoverLimit((PrVen - pegarLucros2),(Abs(Position) - 1));
 								end
-							else if (qnt > 1) then//if (Close > (PrVen - pegarLucros)) then
-								begin
-									BuyToCoverStop(PrVen,(PrVen + ticksStop),Abs(Position));
+							else
+								begin							
+									if ((Close > ma20) and (Close[1] > ma20[1])) then
+										begin
+											BuyToCoverAtMarket(Abs(Position));
+										end
+									else if (qnt > 1) then //if (Close > (PrVen - pegarLucros)) then
+										begin
+											BuyToCoverStop(PrVen,(PrVen + ticksStop),Abs(Position));
+										end;
 								end;
 						end;
 				end;
@@ -100,19 +111,26 @@ begin
 						begin
 							SellToCoverStop(inicioStop,(inicioStop - (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
-					if (Abs(Position) > 1) then
+					if (Abs(Position) > 2) then
 						begin
-							SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 1));
+							SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 2));
 						end
 					else 
 						begin
-							if ((Close < ma20) and (Close[1] < ma20[1])) then
+							if (Abs(Position) = 2) then
 								begin
-									SellToCoverAtMarket(Abs(Position));
+									SellToCoverLimit((PrCom + pegarLucros2),(Abs(Position) - 1));
 								end
-							else if (qnt > 1) then //if (Close < (PrCom + pegarLucros)) then
+							else
 								begin
-									SellToCoverStop(PrCom,(PrCom - ticksStop),Abs(Position));
+									if ((Close < ma20) and (Close[1] < ma20[1])) then
+										begin
+											SellToCoverAtMarket(Abs(Position));
+										end
+									else if (qnt > 1) then //if (Close < (PrCom + pegarLucros)) then
+										begin
+											SellToCoverStop(PrCom,(PrCom - ticksStop),Abs(Position));
+										end;
 								end;
 						end;
 				end;
