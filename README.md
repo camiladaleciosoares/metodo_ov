@@ -7,9 +7,9 @@ V000_1 --> V000 + implementando parâmetros (inputs)
 
 V000_2 --> V000_1 + implementação de ticks no lugar de pontos
 
-	- ticksLucro = 12 (60 reais)
-	- BEmin = 6 (3 pontos --> 30 reais)
-	- BEmax = 40 (20 pontos --> 200 reais)
+	- ticksLucro = 12 ticks (60 reais)
+	- BEmin = 6 ticks (3 pontos --> 30 reais)
+	- BEmax = 40 ticks (20 pontos --> 200 reais)
 
 
 OBJETIVO: Encontrar Barras Elefantes (BE)
@@ -25,8 +25,8 @@ PARÂMETROS:
 	- fator BE = 2.0
 	- hora saída = 1500
 	- número máximo de contratos = 2
- 	- pegar lucros = 12 ticks/6 pontos
-  	- Tamanho BE >= 6 ticks/3 pontos E Tamanho BE <= 40 ticks/20 pontos
+ 	- pegar lucros = 12 ticks (6 pontos)
+  	- Tamanho BE >= 6 ticks (3 pontos) E Tamanho BE <= 40 ticks (20 pontos)
 
  VARIÁVEIS/AUXILIARES:
 
