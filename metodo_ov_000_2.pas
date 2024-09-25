@@ -1,12 +1,12 @@
-//Metodo_OV_000_1
+//Metodo_OV_000_2
 
 input
 fatorBE(2);   		//Fator para determinar se é uma BE
 horaSaida(1500);	//Horário de saída de todas as operações
 qnt(2); 			//Quantidade inicial de contratos/lotes
-pegarLucros(6); 	//Pontos para pegar lucros
-BEmin(3);			//tamanho mínimo BE
-BEmax(20);			//tamanho máximo BE
+ticksLucro(12); 	//Ticks para pegar lucros
+BEmin(6);			//tamanho mínimo BE
+BEmax(40);			//tamanho máximo BE
 
 var
   tamanhoBarra : Float;
@@ -35,6 +35,8 @@ var
   //verificar se está abaixo da 200MA
   abaixo20     : Boolean;
   //verificar se está abaixo da 20MA
+  pegarLucros  : Float;
+  //Pontos para pegar lucros
 begin
   tamanhoBarra := Abs(Open - Close);
   ma200 := Media(200,Close);
@@ -44,6 +46,7 @@ begin
   barraBear := Close < Open;
   abaixo200 := Close < ma200;
   abaixo20 := Close < ma20;
+  pegarLucros := ticksLucro * MinPriceIncrement;
 	if (ContadorDeCandle = 1) then
 		begin
 			Paintbar(clRed);
@@ -53,7 +56,7 @@ begin
 		begin
 			//if (contaOperacao = 0) then
 				//begin
-					if barraBear and BEteste and (tamanhoBarra >= BEmin) and (tamanhoBarra <= BEmax) then
+					if barraBear and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
 						begin
 							Paintbar(clFuchsia);
 								if abaixo200 and (contaOperacao = 0) then
@@ -64,7 +67,7 @@ begin
 										contaOperacao := contaOperacao + 1;
 									end;
 						end;
-					if barraBull and BEteste and (tamanhoBarra >= BEmin) and (tamanhoBarra <= BEmax) then
+					if barraBull and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
 						begin
 							Paintbar(clGreen);
 								if ( not abaixo200) and (contaOperacao = 0) then
