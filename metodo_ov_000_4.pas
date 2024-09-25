@@ -1,4 +1,4 @@
-//Metodo_OV_000_3
+//Metodo_OV_000_4
 
 input
 fatorBE(2);   		//Fator para determinar se é uma BE
@@ -88,7 +88,7 @@ begin
 								begin
 									BuyToCoverAtMarket(Abs(Position));
 								end
-							else //if (Close > (PrVen - pegarLucros)) then
+							else if (qnt > 1) then//if (Close > (PrVen - pegarLucros)) then
 								begin
 									BuyToCoverStop(PrVen,(PrVen + ticksStop),Abs(Position));
 								end;
@@ -110,7 +110,7 @@ begin
 								begin
 									SellToCoverAtMarket(Abs(Position));
 								end
-							else //if (Close < (PrCom + pegarLucros)) then
+							else if (qnt > 1) then //if (Close < (PrCom + pegarLucros)) then
 								begin
 									SellToCoverStop(PrCom,(PrCom - ticksStop),Abs(Position));
 								end;
