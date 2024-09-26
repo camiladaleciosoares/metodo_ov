@@ -7,24 +7,24 @@ V000_1 --> V000 + implementando parâmetros (inputs)
 
 V000_2 --> V000_1 + implementação de ticks no lugar de pontos
 
-	- ticksLucro = 12 ticks (60 reais)
-	- BEmin = 6 ticks (3 pontos --> 30 reais)
-	- BEmax = 40 ticks (20 pontos --> 200 reais)
+V000_3 --> V000_2 + alterações (HasPosition, ordem stop loss) + Correção ordem ToCoverStop
 
- V000_3 --> V000_2 + alterações 
- 
- 	- Troca de contaOperações por (not HasPosition)
-	- Alteração de stop loss para tipo de ordem ToCoverStop no valor da abertura da BE +/- 1 tick
-	- Correção ordem ToCoverStop
+V000_4 --> Alterar V000_3 para funcionar com 2 ou 1 contrato no parâmetro qnt
 
- V000_4 --> Alterar V000_3 
- 
- 	-Juntar V000_3 de 2Contratos E Vteste 1Contrato em um código, alterando o parâmetro qnt para 2 ou 1.
+V000_5 --> Correção V000_4
 
-  V001_0 --> Alterar V000_4
+	- Stop de fechamento acima/abaixo 20MA para 2 contratos
+	- Alteração da ordem de break-even
+
+V001_0 --> Alterar V000_4
 
   	- Incluir versão para 3 ou mais contratos no mesmo código
    	- Subir versão quando finalizar implementação
+
+V001_1 --> Correção V001_0 conforme alterações V000_5
+
+	- Stop de fechamento acima/abaixo 20MA para 2/3 contratos
+	- Alteração da ordem de break-even
 
 OBJETIVO: Encontrar Barras Elefantes (BE)
 
