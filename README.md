@@ -24,6 +24,7 @@ V000_2 --> V000_1 + implementação de ticks no lugar de pontos
  V000_5 --> Correção V000_4:
 
   	- Stop de fechamento acima/abaixo 20MA para 2 contratos 
+   	- Alteração da ordem de break-even
 
 
 OBJETIVO: Encontrar Barras Elefantes (BE)
