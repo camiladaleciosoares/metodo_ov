@@ -24,7 +24,10 @@ V001_0 --> Alterar V000_4
 V001_1 --> Correção V001_0 conforme alterações V000_5
 
 	- Stop de fechamento acima/abaixo 20MA para 2/3 contratos
-	- Alteração da ordem de break-even
+	- Alteração da ordem de break-even ToCoverStop (maxStop)
+ 	- Correção para funcionar igual V000_5 com 2 contratos
+		-- 2C: Move stop loss para o break even depois do lucro parcial
+		-- 3C: Move stop loss para o break even depois do segundo lucro parcial
 
 OBJETIVO: Encontrar Barras Elefantes (BE)
 
