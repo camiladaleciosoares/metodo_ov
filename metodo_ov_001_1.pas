@@ -1,4 +1,4 @@
-//Metodo_OV_001_0
+//Metodo_OV_001_1
 
 input
 fatorBE(2);   		//Fator para determinar se é uma BE
@@ -78,58 +78,80 @@ begin
 				end;
 			if IsSold then
 				begin
-					if (Close > PrVen) then
+					if (Close > PrVen) then //Stop loss inicial
 						begin
 							BuyToCoverStop(inicioStop,(inicioStop + (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
-					if (Abs(Position) > 2) then
+					if ((Close > ma20) and (Close[1] > ma20[1])) then //stop-out 2 barras fechando acima da 20MA
 						begin
-							BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 2));
-						end
-					else 
+							BuyToCoverAtMarket(Abs(Position));
+						end;
+					if (qnt = 2) then //pegar lucro parcial 2Contratos
 						begin
-							if (Abs(Position) = 2) then
+							if (Abs(Position) > 1) then //pegar lucros 2Contratos
 								begin
-									BuyToCoverLimit((PrVen - pegarLucros2),(Abs(Position) - 1));
+									BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 1));
 								end
-							else
-								begin							
-									if ((Close > ma20) and (Close[1] > ma20[1])) then
+							else //mover para o break-even
+								begin
+									BuyToCoverStop(PrVen,(PrVen + (maxStop * MinPriceIncrement)),Abs(Position));
+								end;
+						end
+					else if (qnt > 2) then //pegar lucros 3+Contratos
+						begin
+							if (Abs(Position) > 2) then //pegar lucros 1
+								begin
+									BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 2));
+								end
+							else 
+								begin
+									if (Abs(Position) = 2) then //pegar lucros 2
 										begin
-											BuyToCoverAtMarket(Abs(Position));
+											BuyToCoverLimit((PrVen - pegarLucros2),(Abs(Position) - 1));
 										end
-									else if (qnt > 1) then //if (Close > (PrVen - pegarLucros)) then
-										begin
-											BuyToCoverStop(PrVen,(PrVen + ticksStop),Abs(Position));
+									else
+										begin							
+											BuyToCoverStop(PrVen,(PrVen + (maxStop * MinPriceIncrement)),Abs(Position));
 										end;
 								end;
 						end;
 				end;
 			if IsBought then
 				begin
-					if (Close < PrCom) then
+					if (Close < PrCom) then //Stop loss inicial
 						begin
 							SellToCoverStop(inicioStop,(inicioStop - (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
-					if (Abs(Position) > 2) then
+					if ((Close < ma20) and (Close[1] < ma20[1])) then //stop-out 2 barras fechando abaixo da 20MA
 						begin
-							SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 2));
-						end
-					else 
+							SellToCoverAtMarket(Abs(Position));
+						end;
+					if (qnt = 2) then //pegar lucro parcial 2Contratos
 						begin
-							if (Abs(Position) = 2) then
+							if (Abs(Position) > 1) then //pegar lucros 2Contratos
 								begin
-									SellToCoverLimit((PrCom + pegarLucros2),(Abs(Position) - 1));
+									SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 1));
+								end
+							else //mover para o break-even 
+								begin
+									SellToCoverStop(PrCom,(PrCom - (maxStop * MinPriceIncrement)),Abs(Position));
+								end;
+						end
+					else if (qnt > 2) then //pegar lucros 3+Contratos
+						begin
+							if (Abs(Position) > 2) then //pegar lucros 1
+								begin
+									SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 2));
 								end
 							else
 								begin
-									if ((Close < ma20) and (Close[1] < ma20[1])) then
+									if (Abs(Position) = 2) then
 										begin
-											SellToCoverAtMarket(Abs(Position));
+											SellToCoverLimit((PrCom + pegarLucros2),(Abs(Position) - 1));
 										end
-									else if (qnt > 1) then //if (Close < (PrCom + pegarLucros)) then
+									else
 										begin
-											SellToCoverStop(PrCom,(PrCom - ticksStop),Abs(Position));
+											SellToCoverStop(PrCom,(PrCom - (maxStop * MinPriceIncrement)),Abs(Position));
 										end;
 								end;
 						end;
