@@ -55,5 +55,8 @@ PARÂMETROS:
  		-- Para 3 contratos: R$ 250,00 limite de perda diário (~ R$ 50,00 por contrato por operação)
 	- Lucro parcial = fechamento BE + pegar lucros 1 e/ou fechamento BE + pegar lucros 2
 	- Stop loss = abertura BE
+ 	- Break-even apenas para 2+ contratos:
+  		-- 2Contratos: após lucro parcial
+    		-- 3Contratos: após segundo lucro parcial
 
 TIRAR SPLITS E GRUPAMENTOS PARA BACKTESTING (Exibir --> Splits e Grupamento)
