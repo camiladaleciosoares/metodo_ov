@@ -14,7 +14,7 @@ V000_4 --> Alterar V000_3 para funcionar com 2 ou 1 contrato no parâmetro qnt
 V000_5 --> Correção V000_4
 
 	- Stop de fechamento acima/abaixo 20MA para 2 contratos
-	- Alteração da ordem de break-even
+	- Alteração da ordem de break-even ToCoverStop (maxStop)
 
 V001_0 --> Alterar V000_4
 
