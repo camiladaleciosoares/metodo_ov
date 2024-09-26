@@ -1,7 +1,7 @@
 # Método OV
 ## Automação do Método OV
 
-Método OV V000_4 - Básico - WDO
+Método OV V000_5 - Básico - WDO
 
 V000_1 --> V000 + implementando parâmetros (inputs)
 
@@ -20,6 +20,11 @@ V000_2 --> V000_1 + implementação de ticks no lugar de pontos
  V000_4 --> Alterar V000_3 
  
  	-Juntar V000_3 de 2Contratos E Vteste 1Contrato em um código, alterando o parâmetro qnt para 2 ou 1.
+
+ V000_5 --> Correção V000_4:
+
+  	- Stop de fechamento acima/abaixo 20MA para 2 contratos 
+   	- Alteração da ordem de break-even
 
 
 OBJETIVO: Encontrar Barras Elefantes (BE)
