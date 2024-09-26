@@ -1,4 +1,4 @@
-//Metodo_OV_000_4
+//Metodo_OV_000_5
 
 input
 fatorBE(2);   		//Fator para determinar se é uma BE
@@ -74,45 +74,45 @@ begin
 				end;
 			if IsSold then
 				begin
-					if (Close > PrVen) then
+					if (Close > PrVen) then //Stop loss inicial
 						begin
 							BuyToCoverStop(inicioStop,(inicioStop + (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
-					if (Abs(Position) > 1) then
+					if ((Close > ma20) and (Close[1] > ma20[1])) then //stop-out 2 barras fechando acima da 20MA
+						begin
+							BuyToCoverAtMarket(Abs(Position));
+						end;
+					if (Abs(Position) > 1) then //pegar lucros
 						begin
 							BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 1));
 						end
 					else 
 						begin
-							if ((Close > ma20) and (Close[1] > ma20[1])) then
+							if (qnt > 1) then //if (Close > (PrVen - pegarLucros)) then //mover para o break-even
 								begin
-									BuyToCoverAtMarket(Abs(Position));
-								end
-							else if (qnt > 1) then//if (Close > (PrVen - pegarLucros)) then
-								begin
-									BuyToCoverStop(PrVen,(PrVen + ticksStop),Abs(Position));
+									BuyToCoverStop(PrVen,(PrVen + (maxStop * MinPriceIncrement)),Abs(Position));
 								end;
 						end;
 				end;
 			if IsBought then
 				begin
-					if (Close < PrCom) then
+					if (Close < PrCom) then //Stop loss inicial
 						begin
 							SellToCoverStop(inicioStop,(inicioStop - (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
-					if (Abs(Position) > 1) then
+					if ((Close < ma20) and (Close[1] < ma20[1])) then //stop-out 2 barras fechando abaixo da 20MA
+						begin
+							SellToCoverAtMarket(Abs(Position));
+						end;	
+					if (Abs(Position) > 1) then //pegar lucros
 						begin
 							SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 1));
 						end
 					else 
 						begin
-							if ((Close < ma20) and (Close[1] < ma20[1])) then
+							if (qnt > 1) then //if (Close < (PrCom + pegarLucros)) then //mover para o break-even
 								begin
-									SellToCoverAtMarket(Abs(Position));
-								end
-							else if (qnt > 1) then //if (Close < (PrCom + pegarLucros)) then
-								begin
-									SellToCoverStop(PrCom,(PrCom - ticksStop),Abs(Position));
+									SellToCoverStop(PrCom,(PrCom - (maxStop * MinPriceIncrement)),Abs(Position));
 								end;
 						end;
 				end;
