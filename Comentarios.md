@@ -5,4 +5,5 @@ BuyPrice --> usa média dos preços e zera quando a operação é finalizada
 
 PrCom := Close --> usa o preço de fechamento da BE e não o preço de compra e não zera quando a operação é finalizada
 
-### TESTESSGSDG 
+### Observações dia 03/10/2024
+ 
