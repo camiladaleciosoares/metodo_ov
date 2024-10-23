@@ -2,12 +2,13 @@
 //      Testes de coloração      //
 ///////////////////////////////////
 
-//V001
+//V001_1
 
 input
-TipoDeColoracao(2);  //Escolher tipo de coloração
+TipoDeColoracao(3);  //Escolher tipo de coloração
  // 1 --> Barras elefantes
  // 2 --> Bottoming Tail + Topping Tail
+ // 3 --> Clearing bar
 
 
 //inputs para Barras elefantes
@@ -33,6 +34,8 @@ ttailBear     : Float;    //Tamanho top pavio bear
 btailBull     : Float;    //Tamanho bottom pavio bull
 ttailBull     : Float;    //Tamanho top pavio bull
 
+clearBarTesteHBull  : Boolean;    // Verificar se é uma barra Clearing Close Bull
+clearBarTesteHBear  : Boolean;    // Verificar se é uma barra Clearing Close Bear
 
 begin
     
@@ -47,6 +50,9 @@ begin
     ttailBull := Abs(High - Close);   
 
     specTamanhoTotal := (tamanhoTotal >= (BEmin * MinPriceIncrement)) and (tamanhoTotal <= (BEmax * MinPriceIncrement));
+
+    clearBarTesteHBull := Close >= (Highest(High,5)[1]); 
+    clearBarTesteHBear := Close <= (Lowest(Low,5)[1]);
 
 //  BARRA ELEFANTE  //
 //  Barra elefante Bear --> Rosa
@@ -67,12 +73,12 @@ if (TipoDeColoracao = 1) then
   end;
 
 
-//  Teste Bottoming Tail  //
+//  Teste Bottoming Tail  e Topping Tail //
 //  BT Bear --> Marron
 //  BT Bull --> Teal
 //  BT neutra --> Amarelo 
 
-if (TipoDeColoracao = 2) then   
+if (TipoDeColoracao = 2) then
   begin
     if specTamanhoTotal then
         begin
@@ -110,7 +116,24 @@ if (TipoDeColoracao = 2) then
                         end;
                 end;
         end;
-
   end;
+
+// Clearing Bar //
+
+if (TipoDeColoracao = 3) then
+    begin
+        if specTamanhoTotal then
+            begin         
+                if clearBarTesteHBull then
+                    begin
+                        Paintbar(clGreen);
+                    end
+                else if clearBarTesteHBear then
+                    begin
+                        Paintbar(clFuchsia);
+                    end;
+            end;
+    end;
+
 
 end;
