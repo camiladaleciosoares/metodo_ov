@@ -12,6 +12,9 @@ Teste de coloração inclui:
         Para colorir qualquer tamanho de BT e TT, alterar o parâmetro BEmin para 1
         BT: está sendo considerado corpo+tt tem que ser 2x maior ou igual a BT+mínimo incremento, proporção de 1/3 do total da barra
         TT: está sendo considerado corpo+bt tem que ser 2x maior ou igual a TT+mínimo incremento, proporção de 1/3 do total da barra
+    3) Clearing bar
+- Inclusão de variáveis booleanas para substituir nos Ifs    
+
 
 ### Fazer análises
 [ ] Analisar diferença stop inicial V001_1 e V002_0B
