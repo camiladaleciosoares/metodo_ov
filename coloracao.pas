@@ -2,7 +2,7 @@
 //      Testes de coloração      //
 ///////////////////////////////////
 
-//V001_1
+//V001_2
 
 input
 TipoDeColoracao(3);  //Escolher tipo de coloração
@@ -26,6 +26,7 @@ barraBull     : Boolean;  //verificar se é uma barra verde
 barraBear     : Boolean;  //verificar se é uma barra vermelha
 
 BEteste       : Boolean;  //Teste para verificar se é uma BE
+barraBE       : Boolean; //Verificar se é uma barra BE
 specTamanhoTotal  : Boolean;  //Teste para verificar se a barra atende os requisitos de tamanho para ser considerada
 
 tamanhoTotal  : Float;    //Tamanho total de uma barra
@@ -33,6 +34,12 @@ btailBear     : Float;    //Tamanho bottom pavio bear
 ttailBear     : Float;    //Tamanho top pavio bear
 btailBull     : Float;    //Tamanho bottom pavio bull
 ttailBull     : Float;    //Tamanho top pavio bull
+barraBTbull : Boolean;  //verificar se é uma barra BT bull
+barraBTbear : Boolean;  //verificar se é uma barra BT bear
+barraBTneutra : Boolean;  //verificar se é uma barra BT neutra
+barraTTbull : Boolean;  //verificar se é uma barra TT bull
+barraTTbear : Boolean;  //verificar se é uma barra TT bear
+barraTTneutra : Boolean;  //verificar se é uma barra TT neutra
 
 clearBarTesteHBull  : Boolean;    // Verificar se é uma barra Clearing Close Bull
 clearBarTesteHBear  : Boolean;    // Verificar se é uma barra Clearing Close Bear
@@ -42,6 +49,10 @@ begin
     tamanhoBarra := Abs(Open - Close);
     barraBull := Close > Open;
     barraBear := Close < Open;
+    BEteste := ((tamanhoBarra >= (fatorBE * tamanhoBarra[5])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[4])) and 
+    (tamanhoBarra >= (fatorBE * tamanhoBarra[3])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[2])) and 
+    (tamanhoBarra >= (fatorBE * tamanhoBarra[1])));
+    barraBE := BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement));
     
     tamanhoTotal := Abs(High - Low);
     btailBear := Abs(Close - Low);
@@ -50,6 +61,13 @@ begin
     ttailBull := Abs(High - Close);   
 
     specTamanhoTotal := (tamanhoTotal >= (BEmin * MinPriceIncrement)) and (tamanhoTotal <= (BEmax * MinPriceIncrement));
+
+    barraBTbull := ((fatorBT * (tamanhoBarra + ttailBull)) <= (btailBull + MinPriceIncrement));
+    barraBTbear := ((fatorBT * (tamanhoBarra + ttailBear)) <= (btailBear + MinPriceIncrement));
+    barraBTneutra := ((fatorBT * (ttailBull)) <= (btailBull + MinPriceIncrement));
+    barraTTbull := ((fatorBT * (tamanhoBarra + btailBull)) <= (ttailBull + MinPriceIncrement));
+    barraTTbear := ((fatorBT * (tamanhoBarra + btailBear)) <= (ttailBear + MinPriceIncrement));
+    barraTTneutra := ((fatorBT * (btailBull)) <= (ttailBull + MinPriceIncrement));
 
     clearBarTesteHBull := Close >= (Highest(High,5)[1]); 
     clearBarTesteHBear := Close <= (Lowest(Low,5)[1]);
@@ -60,13 +78,11 @@ begin
 
 if (TipoDeColoracao = 1) then
   begin
-    BEteste := ((tamanhoBarra >= (fatorBE * tamanhoBarra[5])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[4])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[3])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[2])) and (tamanhoBarra >= (fatorBE * tamanhoBarra[1])));   
-
-    if barraBear and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
+    if barraBear and barraBE then
         begin
           Paintbar(clFuchsia);
         end;
-      if barraBull and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
+      if barraBull and barraBE then
         begin
           Paintbar(clGreen);
         end;
@@ -84,33 +100,33 @@ if (TipoDeColoracao = 2) then
         begin
             if barraBear then
                 begin    
-                    if ((fatorBT * (tamanhoBarra + ttailBear)) <= (btailBear + MinPriceIncrement)) then //((fatorBT*(tamanhoBarra)) <= btailBear) and (ttailBear <= (tBTbTTmax * MinPriceIncrement)) then
+                    if barraBTbear then //((fatorBT*(tamanhoBarra)) <= btailBear) and (ttailBear <= (tBTbTTmax * MinPriceIncrement)) then
                         begin
                             Paintbar(clMaroon); //BT
                         end
-                    else if ((fatorBT * (tamanhoBarra + btailBear)) <= (ttailBear + MinPriceIncrement)) then //((fatorBT*(tamanhoBarra)) <= ttailBear) and (btailBear <= (tBTbTTmax * MinPriceIncrement)) then
+                    else if barraTTbear then //((fatorBT*(tamanhoBarra)) <= ttailBear) and (btailBear <= (tBTbTTmax * MinPriceIncrement)) then
                         begin
                             Paintbar(clFuchsia); //TT
                         end;
                 end
             else if barraBull then
                 begin
-                    if ((fatorBT * (tamanhoBarra + ttailBull)) <= (btailBull + MinPriceIncrement)) then //((fatorBT*(tamanhoBarra)) <= btailBull) and (ttailBull <= (tBTbTTmax * MinPriceIncrement)) then
+                    if barraBTbull then //((fatorBT*(tamanhoBarra)) <= btailBull) and (ttailBull <= (tBTbTTmax * MinPriceIncrement)) then
                         begin
                             Paintbar(clBlue); //BT
                         end 
-                    else if ((fatorBT * (tamanhoBarra + btailBull)) <= (ttailBull + MinPriceIncrement)) then //((fatorBT*(tamanhoBarra)) <= ttailBull) and (btailBull <= (tBTbTTmax * MinPriceIncrement)) then
+                    else if barraTTbull then //((fatorBT*(tamanhoBarra)) <= ttailBull) and (btailBull <= (tBTbTTmax * MinPriceIncrement)) then
                         begin
                             Paintbar(clGreen); //TT
                         end; 
                 end
             else
                 begin
-                    if  ((fatorBT * (ttailBull)) <= (btailBull + MinPriceIncrement)) then //((fatorBT*(ttailBull)) <= btailBull) and (ttailBull <= (tBTbTTmax * MinPriceIncrement)) then
+                    if  barraBTneutra then //((fatorBT*(ttailBull)) <= btailBull) and (ttailBull <= (tBTbTTmax * MinPriceIncrement)) then
                         begin
                             Paintbar(clYellow); //BT
                         end
-                    else if  ((fatorBT * (btailBull)) <= (ttailBull + MinPriceIncrement)) then //((fatorBT*(btailBull)) <= ttailBull) and (btailBull <= (tBTbTTmax * MinPriceIncrement)) then
+                    else if  barraTTneutra then //((fatorBT*(btailBull)) <= ttailBull) and (btailBull <= (tBTbTTmax * MinPriceIncrement)) then
                         begin
                             Paintbar(clAqua); //TT
                         end;

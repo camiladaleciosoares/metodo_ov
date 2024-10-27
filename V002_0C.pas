@@ -1,9 +1,9 @@
-//Metodo_OV_002_0B
+//Metodo_OV_002_0C --> Teste substituição de abaixo200 para abaixo20
 
 input
 fatorBE(2);   		//Fator para determinar se é uma BE
-horaSaida(1200);	//Horário de saída de todas as operações
-qnt(6); 			//Quantidade inicial de contratos/lotes
+horaSaida(1500);	//Horário de saída de todas as operações
+qnt(3); 			//Quantidade inicial de contratos/lotes
 ticksLucro(12); 	//Ticks para pegar lucros parcial 1
 ticksLucro2(16); 	//Ticks para pegar lucros parcial 2
 ticksStop(1);		//Ticks para stop além da abertura da BE
@@ -59,7 +59,7 @@ begin
 			if barraBear and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
 				begin
 					Paintbar(clFuchsia);
-					if abaixo200 and (not HasPosition) then
+					if abaixo20 and (not HasPosition) then
 						begin
 							SellShortAtMarket(qnt);
 							PrVen := Close;
@@ -69,20 +69,19 @@ begin
 			if barraBull and BEteste and (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement)) then
 				begin
 					Paintbar(clGreen);
-					if (not abaixo200) and (not HasPosition) then
+					if ( not abaixo20) and (not HasPosition) then
 						begin
 							BuyAtMarket(qnt);
 							PrCom := Close;
 							inicioStop := Open - (ticksStop * MinPriceIncrement);
-							SellToCoverStop(inicioStop,(inicioStop - (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
 				end;
 			if IsSold then
 				begin
-					//if (Close > PrVen) then //Stop loss inicial
-						//begin
+					if (Close > PrVen) then //Stop loss inicial
+						begin
 							BuyToCoverStop(inicioStop,(inicioStop + (maxStop * MinPriceIncrement)),Abs(Position));
-						//end;
+						end;
 					if ((Close > ma20) and (Close[1] > ma20[1])) then //stop-out 2 barras fechando acima da 20MA
 						begin
 							BuyToCoverAtMarket(Abs(Position));
@@ -119,10 +118,10 @@ begin
 				end;
 			if IsBought then
 				begin
-					//if (Close < PrCom) then //Stop loss inicial
-						//begin
+					if (Close < PrCom) then //Stop loss inicial
+						begin
 							SellToCoverStop(inicioStop,(inicioStop - (maxStop * MinPriceIncrement)),Abs(Position));
-						//end;
+						end;
 					if ((Close < ma20) and (Close[1] < ma20[1])) then //stop-out 2 barras fechando abaixo da 20MA
 						begin
 							SellToCoverAtMarket(Abs(Position));
