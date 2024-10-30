@@ -1,4 +1,4 @@
-//Metodo_OV_002_0E --> entra em operações quando está no máx à 25 pontos da ma200
+//Metodo_OV_002_0E --> entra em operações quando está no máx à 30 pontos da ma200
 
 input
 fatorBE(2);   		//Fator para determinar se é uma BE
