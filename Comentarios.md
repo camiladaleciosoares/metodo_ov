@@ -48,3 +48,12 @@ Existe uma configuração da estratégia na aba "Entrada" na seção "Modo de ex
             Considerações:  - o stop foi bem menor, pois a entrada foi antecipada;
                             - não entrou no candle seguinte, mesmo tendo configurado um BE bull (não sei dizer o pq);
                             - possivelmente, em uma barra muito volátil, mas que dê continuação no movimento, pode ser que entrando antecipadamente (antes do fechamento do candle) ocorra um stop e depois barra volte e continue o movimento.
+
+### Resumo análises 30/10/2024
+1 - até meio dia com stop loss e gain diário apresentam os melhores resultados (o melhor ou segundo melhor)
+2 - considerando o ano, até às 10h com stop diário apresentou o melhor resultado
+3 - BE mín de 4 pontos é melhor na maioria das vezes
+4 - o maior resultado foi considerando o ano e stop diário BE de 4 e até às 10h e o segundo melhor até meio dia nas mesmas condições
+5 - em geral, não vale a pena operar até às 17h
+6 - usar sempre stop diário
+7 - em geral, não vale a pena usar pos1 max
