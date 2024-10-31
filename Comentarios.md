@@ -1,5 +1,7 @@
 # Testes plataforma - Comentários
 
+[ ] excluir commit da V002_0 de 30/10
+
 ### PrCom x BuyPrice
 BuyPrice --> usa média dos preços e zera quando a operação é finalizada
 
