@@ -5,6 +5,16 @@ input
 	qnt(3); 									//Quantidade inicial de contratos/lotes
 
 	breakEven (True);			 				//Habilita/desabilita a mudança do stop para o breakeven 
+	BEcompra (True);							//Habilita/desabilita entrada em BE bull
+	BEvenda (True) ;							//Habilita/desabilita entrada em BE bear
+	CLEARINGcompra(True);						//Habilita/desabilita entrada em Cleating bar bull
+	CLEARINGvenda(True);						//Habilita/desabilita entrada em Cleating bar bear
+	vira180compra(True);						//Habilita/desabilita entrada em bull180
+	vira180venda(True);							//Habilita/desabilita entrada em bear180
+	RBIcompra(True);							//Habilita/desabilita entrada em RBI
+	GBIvenda(True);								//Habilita/desabilita entrada em GBI
+	BTcompra(True);								//Habilita/desabilita entrada em TT compra
+	TTvenda(True);								//Habilita/desabilita entrada em BT venda
 
 	ticksLucro(12); 	//WIN 30 (150 pontos)	//Ticks para pegar lucros parcial 1
 	ticksLucro2(16); 	//WIN 45 (225 pontos)	//Ticks para pegar lucros parcial 2
@@ -15,9 +25,9 @@ input
 	BEmax(40);			//WIN 80 (400 pontos)	//Tamanho máximo BE
 	maxStop(40);		//WIN 80 (400 pontos)	//Ticks para limite máximo da ordem de stop
 
-	fatorBT(2);         						//Fator para determinar a proporção do corpo/pavio
-
 	BImax(6);           //WIN 20 (100 pontos)	//Ticks para determinar tamanho máximo da barra ignorada
+
+	fatorBT(2);         						//Fator para determinar a proporção do corpo/pavio
 
 var
 	ma200        	: Float;	//Média móvel 200 períodos
@@ -110,78 +120,147 @@ begin
   
 	if Time < horaSaida then
 		begin
-			if (not HasPosition) then
+			if (BEvenda and barraBEbear) then
 				begin
-					if (abaixo200 and abaixo20) then
+					Paintbar(clFuchsia);
+					if ((not HasPosition) and abaixo200 and abaixo20) then
 						begin
-							if (barraBear) then
-								begin
-									if (barraBEbear) then
-										begin
-											Paintbar(clFuchsia);
-											SellShortAtMarket(qnt);
-											PrVen := Close;
-											inicioStop := Open + (ticksStop * MinPriceIncrement);
-										end
-									else if (clearBarBear) then
-										begin
-											Paintbar(clMaroon);
-											SellShortAtMarket(qnt);
-											PrVen := Close;
-											inicioStop := Open + (ticksStop * MinPriceIncrement);
-										end
-									else if (bear180) then
-										begin
-											Paintbar(clPurple);
-											SellShortAtMarket(qnt);
-											PrVen := Close;
-											inicioStop := Open + (ticksStop * MinPriceIncrement);
-										end
-									else if (GBI) then
-										begin
-											Paintbar(clRed);
-											SellShortAtMarket(qnt);
-											PrVen := Close;
-											inicioStop := Open + (ticksStop * MinPriceIncrement);
-										end;
-								end;
-						end
-					else if ((not abaixo200) and (not abaixo20)) then
-						begin
-							if (barraBull) then
-								begin
-									if (barraBEbull) then  
-										begin
-											Paintbar(clGreen);					
-											BuyAtMarket(qnt);
-											PrCom := Close;
-											inicioStop := Open - (ticksStop * MinPriceIncrement);
-										end
-									else if (clearBarBull) then  
-										begin
-											Paintbar(clLime);					
-											BuyAtMarket(qnt);
-											PrCom := Close;
-											inicioStop := Open - (ticksStop * MinPriceIncrement);
-										end
-									else if (bull180) then  
-										begin
-											Paintbar(clTeal);					
-											BuyAtMarket(qnt);
-											PrCom := Close;
-											inicioStop := Open - (ticksStop * MinPriceIncrement);
-										end
-									else if (RBI) then  
-										begin
-											Paintbar(clOlive);					
-											BuyAtMarket(qnt);
-											PrCom := Close;
-											inicioStop := Open - (ticksStop * MinPriceIncrement);
-										end;
-								end;
+							SellShortAtMarket(qnt);
+							PrVen := Close;
+							inicioStop := Open + (ticksStop * MinPriceIncrement);
 						end;
 				end
-			else if IsSold then
+			else if (CLEARINGvenda and clearBarBear) then
+				begin
+					Paintbar(clMaroon);
+					if ((not HasPosition) and abaixo200 and abaixo20) then
+						begin
+							SellShortAtMarket(qnt);
+							PrVen := Close;
+							inicioStop := Open + (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (vira180venda and bear180) then
+				begin
+					Paintbar(clPurple);
+					if ((not HasPosition) and abaixo200 and abaixo20) then
+						begin
+							SellShortAtMarket(qnt);
+							PrVen := Close;
+							inicioStop := Open + (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (GBIvenda and GBI) then
+				begin
+					Paintbar(clRed);
+					if ((not HasPosition) and abaixo200 and abaixo20) then
+						begin
+							SellShortAtMarket(qnt);
+							PrVen := Close;
+							inicioStop := Open + (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (TTvenda and barraTTbull) then
+				begin
+					Paintbar(RGB(250,150,50)); //laranja
+					if ((not HasPosition) and abaixo200 and abaixo20) then
+						begin
+							SellShortAtMarket(qnt);
+							PrVen := Close;
+							inicioStop := High + (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (TTvenda and barraTTbear) then
+				begin
+					Paintbar(RGB(250,150,50)); //laranja
+					if ((not HasPosition) and abaixo200 and abaixo20) then
+						begin
+							SellShortAtMarket(qnt);
+							PrVen := Close;
+							inicioStop := High + (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (TTvenda and barraTTneutra) then
+				begin
+					Paintbar(RGB(250,150,50)); //laranja
+					if ((not HasPosition) and abaixo200 and abaixo20) then
+						begin
+							SellShortAtMarket(qnt);
+							PrVen := Close;
+							inicioStop := High + (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (BEcompra and barraBEbull) then  
+				begin
+					Paintbar(clGreen);
+					if ((not HasPosition) and (not abaixo200) and (not abaixo20)) then
+						begin
+							BuyAtMarket(qnt);
+							PrCom := Close;
+							inicioStop := Open - (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (CLEARINGcompra and clearBarBull) then  
+				begin
+					Paintbar(clLime);
+					if ((not HasPosition) and (not abaixo200) and (not abaixo20)) then
+						begin
+							BuyAtMarket(qnt);
+							PrCom := Close;
+							inicioStop := Open - (ticksStop * MinPriceIncrement);
+						end;		
+				end
+			else if (vira180compra and bull180) then  
+				begin
+					Paintbar(clTeal);											
+					if ((not HasPosition) and (not abaixo200) and (not abaixo20)) then
+						begin
+							BuyAtMarket(qnt);
+							PrCom := Close;
+							inicioStop := Open - (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (RBIcompra and RBI) then  
+				begin
+					Paintbar(clOlive);
+					if ((not HasPosition) and (not abaixo200) and (not abaixo20)) then
+						begin
+							BuyAtMarket(qnt);
+							PrCom := Close;
+							inicioStop := Open - (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (BTcompra and barraBTbull) then
+				begin
+					Paintbar(clAqua);
+					if ((not HasPosition) and (not abaixo200) and (not abaixo20)) then
+						begin
+							BuyAtMarket(qnt);
+							PrCom := Close;
+							inicioStop := Low - (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (BTcompra and barraBTbear) then
+				begin
+					Paintbar(clAqua);
+					if ((not HasPosition) and (not abaixo200) and (not abaixo20)) then
+						begin
+							BuyAtMarket(qnt);
+							PrCom := Close;
+							inicioStop := Low - (ticksStop * MinPriceIncrement);
+						end;
+				end
+			else if (BTcompra and barraBTneutra) then
+				begin
+					Paintbar(clAqua);
+					if ((not HasPosition) and (not abaixo200) and (not abaixo20)) then
+						begin
+							BuyAtMarket(qnt);
+							PrCom := Close;
+							inicioStop := Low - (ticksStop * MinPriceIncrement);
+						end;											
+				end;
+			if IsSold then
 				begin
 					if (Close > PrVen) then //Stop loss inicial
 						begin
