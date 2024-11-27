@@ -11,14 +11,12 @@ V000_5 --> Correção V000_4
 
 V001_0 --> Alterar V000_4
 V001_1 --> Correção V001_0 conforme alterações V000_5
-	- Stop de fechamento acima/abaixo 20MA para 2/3 contratos
-	- Alteração da ordem de break-even ToCoverStop (maxStop)
- 	- Correção para funcionar igual V000_5 com 2 contratos
-		-- 2C: Move stop loss para o break even depois do lucro parcial
-		-- 3C: Move stop loss para o break even depois do segundo lucro parcial
 
 V002_0 --> Inclusão de outros eventos de entrada -- versão de início de testes de automação na conta real com 1 contrato
 	- Eventos de entrada: BE, Clearing bar, bull180/bear180, RBI/GBI
+
+V002_1 --> Modificação de parâmetros e coloração de eventos de entrada + correção ClearBar + inlcusão BT e TT + escolha break-even
+	- Eventos de entrada: BE, Clearing bar, bull180/bear180, RBI/GBI e BT/TT
 
 OBJETIVO: Encontrar eventos de abertura que satisfaçam as condições de cada tipo de evento
 
@@ -49,16 +47,27 @@ OBJETIVO: Encontrar eventos de abertura que satisfaçam as condições de cada t
         - bull180: barra bear anterior e barra bull atual com fechamento maior ou igual que da barra anterior
         - bear180: barra bull anterior e barra bear atual com fechamento menor ou igual que da barra anterior
 	
-	- RBI e GBI
+	- RBI e GBI:
         - BImax determina tamanho máximo para barra ignoradas
         - GBI: a antepenúltima barra bear e penúltima barra bull com tamanho menor ou igual a BImax e barra bear atual com fechamento menor ou igual a abertura da penúltima barra
         - RBI: a antepenúltima barra bull e penúltima barra bear com tamanho menor ou igual a BImax e barra bull atual com fechamento da maior ou igual a abertura da penúltima barra
         - não considera o tamanho das barras antepenúltima e última (atual) --> possível modificação posterior
 
+	- BT e TT:
+		- considera o tamanho total da barra (max e min)
+		- as barras tem tamanho total mínimo e máximo --> utiliza os parâmentros da BE
+		- FatorBT determina o a proporção corpo/pavio
+			- BT: está sendo considerado corpo+tt tem que ser 2x (fatorBT) menor ou igual a BT+mínimo incremento, proporção de 1/3 do total da barra 
+			- TT: está sendo considerado corpo+bt tem que ser 2x (fatorBT) menor ou igual a TT+mínimo incremento, proporção de 1/3 do total da barra 
+			- Tails neutras: 'tail menor' tem que ser 2x (fatorBT) menor ou igual a 'tail maior'+mínimo incremento, proporção de 1/3 do total da barra
+
 PARÂMETROS:
 
 	- hora saída = 1200
 	- número de contratos = 3 (pegar lucro 1 e 2), 2 (pegar lucros) OU 1 (com stop out)
+
+	- habilitar/desabilitar: Break-even, BE compra e venda, Clearing bar compra e venda, vira180 compra e venda, RBI compra e GBI venda, BT compra e TT venda
+
 	- pegar lucros 1 = WDO: 12 ticks (6 pontos) -- WIN: 30 ticks (150 pontos)
   	- pegar lucros 2 = WDO: 16 ticks (8 pontos) -- WIN: 45 ticks (225 pontos)
 	- ticks de stop inicial = WDO: 1 tick (0,5 ponto) -- WIN: 1 tick (5 pontos)
@@ -68,7 +77,9 @@ PARÂMETROS:
 	- tamanho BE max = WDO: <= 40 ticks (20 pontos) -- WIN <= 80 ticks (400 pontos)
 	- ticks máximo ordem stop = WDO: 40 ticks (20 pontos) -- WIN: 80 ticks (400 pontos)
 
-	- tamanho máximo barra ignorada, BImax = WDO: 6 ticks (3 pontos) -- WIN: 20 ticks (100 pontos)  	
+	- tamanho máximo barra ignorada, BImax = WDO: 6 ticks (3 pontos) -- WIN: 20 ticks (100 pontos)
+
+	- fator BT = 2 --> proporção entre corpo/pavio em BT e TT  	
 
  VARIÁVEIS/AUXILIARES:
 
@@ -80,7 +91,7 @@ PARÂMETROS:
  		-- Para 3 contratos: R$ 250,00 limite de perda diário (~ R$ 50,00 por contrato por operação)
 	- Lucro parcial = fechamento BE + pegar lucros 1 e/ou fechamento BE + pegar lucros 2
 	- Stop loss = abertura BE
- 	- Break-even apenas para 2+ contratos:
+ 	- Break-even apenas para 2+ contratos com possibilidade de desabilitar:
   		-- 2Contratos: após lucro parcial
     		-- 3Contratos: após segundo lucro parcial
 
