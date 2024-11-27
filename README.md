@@ -1,7 +1,7 @@
 # Método OV
 ## Automação do Método OV
 
-Método OV V002_0 - Parâmetros do código setados para WDO, parâmetros WIN nos comentários
+Método OV V002_2 - Parâmetros do código setados para WDO, parâmetros WIN nos comentários
 
 V000_1 --> V000 + implementando parâmetros (inputs)
 V000_2 --> V000_1 + implementação de ticks no lugar de pontos
@@ -18,12 +18,14 @@ V002_0 --> Inclusão de outros eventos de entrada -- versão de início de teste
 V002_1 --> Modificação de parâmetros e coloração de eventos de entrada + correção ClearBar + inlcusão BT e TT + escolha break-even
 	- Eventos de entrada: BE, Clearing bar, bull180/bear180, RBI/GBI e BT/TT
 
+V002_2 --> Modificação pegar lucros incremental dependendo no número de contratos inicial
+
 OBJETIVO: Encontrar eventos de abertura que satisfaçam as condições de cada tipo de evento
 
 	- Condições básicas:
 		- Uma operação por vez (não é possível adicionar)
-		- Acima 200MA: comprar
-		- Abaixo 200MA: vender
+		- Acima 200MA e 20MA: comprar
+		- Abaixo 200MA e 20MA: vender
 		- Saída de acordo com o número de contratos: Sair com lucro(s) parcial(is) e/ou stop out (2 barras cruzar 20MA ou Break Even)
 			OU
 		- Sair na abertura da barra de entrada (Stop loss)
@@ -64,12 +66,13 @@ OBJETIVO: Encontrar eventos de abertura que satisfaçam as condições de cada t
 PARÂMETROS:
 
 	- hora saída = 1200
-	- número de contratos = 3 (pegar lucro 1 e 2), 2 (pegar lucros) OU 1 (com stop out)
+	- número de contratos = 3 (pegar lucro qnt-1, sendo o último stop-out) 
 
+	- quantidade de "pegar-lucros" para habilitar break-even
 	- habilitar/desabilitar: Break-even, BE compra e venda, Clearing bar compra e venda, vira180 compra e venda, RBI compra e GBI venda, BT compra e TT venda
 
+	- incremento pegar lucros = WDO: 4 ticks (2 pontos) -- WIN: 15 ticks (75 pontos)
 	- pegar lucros 1 = WDO: 12 ticks (6 pontos) -- WIN: 30 ticks (150 pontos)
-  	- pegar lucros 2 = WDO: 16 ticks (8 pontos) -- WIN: 45 ticks (225 pontos)
 	- ticks de stop inicial = WDO: 1 tick (0,5 ponto) -- WIN: 1 tick (5 pontos)
 	
 	- fator BE = WDO: 2.0 -- WIN: 1.75
@@ -88,11 +91,11 @@ PARÂMETROS:
 	- sem limites de perdas/ganhos diários
 		OU
 	- limite de perdas:
- 		-- Para 3 contratos: R$ 250,00 limite de perda diário (~ R$ 50,00 por contrato por operação)
-	- Lucro parcial = fechamento BE + pegar lucros 1 e/ou fechamento BE + pegar lucros 2
+ 		-- Para 3 contratos: R$ 125,00 limite de perda diário e R$ 500,00 de ganho diário
+		-- Para 2 contratos: R$  85,00 limite de perda diário e R$ 350,00 de ganho diário
+		-- Para 1 contrato:  R$  45,00 limite de perda diário e R$ 350,00 de ganho diário
+	- Lucro parcial = fechamento BE + PT1 + [(qnt - Posição)*incremento]
 	- Stop loss = abertura BE
- 	- Break-even apenas para 2+ contratos com possibilidade de desabilitar:
-  		-- 2Contratos: após lucro parcial
-    		-- 3Contratos: após segundo lucro parcial
+ 	- Break-even apenas para 2+ contratos com possibilidade de desabilitar e escolher depois de quantos lucros mover
 
 TIRAR SPLITS E GRUPAMENTOS PARA BACKTESTING (Exibir --> Splits e Grupamento)

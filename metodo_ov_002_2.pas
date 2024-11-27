@@ -1,10 +1,12 @@
-//Metodo_OV_V002_1  BE, Clearing, +-180, GBI/RBI + escolha de break-even, modificação coloração de eventos
+//Metodo_OV_V002_2  Alteração pegarLucros
 
 input
 	horaSaida(1200);							//Horário de saída de todas as operações
 	qnt(3); 									//Quantidade inicial de contratos/lotes
 
-	breakEven (True);			 				//Habilita/desabilita a mudança do stop para o breakeven 
+	qntBreakEven(2);							//Habilitar break-even depois do n lucro
+	breakEven (True);			 				//Habilita/desabilita a mudança do stop para o breakeven
+	
 	BEcompra (True);							//Habilita/desabilita entrada em BE bull
 	BEvenda (True) ;							//Habilita/desabilita entrada em BE bear
 	CLEARINGcompra(True);						//Habilita/desabilita entrada em Cleating bar bull
@@ -16,8 +18,8 @@ input
 	BTcompra(True);								//Habilita/desabilita entrada em TT compra
 	TTvenda(True);								//Habilita/desabilita entrada em BT venda
 
-	ticksLucro(12); 	//WIN 30 (150 pontos)	//Ticks para pegar lucros parcial 1
-	ticksLucro2(16); 	//WIN 45 (225 pontos)	//Ticks para pegar lucros parcial 2
+	incPT(4);									//Ticks para incremento de pegar lucros
+	ticksLucro(12); 	//WIN 30 (150 pontos)	//Ticks para pegar lucros parcial inicial
 	ticksStop(1);								//Ticks para stop além da abertura da BE
 	
 	fatorBE(2);   		//WIN 1.75				//Fator para determinar se é uma BE
@@ -39,7 +41,6 @@ var
 	PrVen        	: Float;	//Preço de venda
 	inicioStop   	: Float;	//Pontos para stop inicial
 	pegarLucros  	: Float;	//Pontos para pegar lucros
-	pegarLucros2 	: Float;	//Pontos para pegar lucros
 	 
 	contaOperacao	: Integer;	//Contador de operações
 
@@ -84,7 +85,6 @@ begin
 	abaixo20 := Close < ma20;
 	  
 	pegarLucros := ticksLucro * MinPriceIncrement;
-	pegarLucros2 := ticksLucro2 * MinPriceIncrement;
 	  
 	tamanhoBarra := Abs(Open - Close);
 	specTamanho := (tamanhoBarra >= (BEmin * MinPriceIncrement)) and (tamanhoBarra <= (BEmax * MinPriceIncrement));
@@ -270,34 +270,13 @@ begin
 						begin
 							BuyToCoverAtMarket(Abs(Position));
 						end;
-					if (qnt = 2) then //pegar lucro parcial 2Contratos
+					if (Abs(Position) > 1) then //pegar lucro parcial
 						begin
-							if (Abs(Position) > 1) then //pegar lucros 2Contratos
-								begin
-									BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 1));
-								end
-							else if breakEven then //mover para o break-even
-								begin
-									BuyToCoverStop(PrVen,(PrVen + (maxStop * MinPriceIncrement)),Abs(Position));
-								end;
-						end
-					else if (qnt > 2) then //pegar lucros 3+Contratos
+							BuyToCoverLimit((PrVen - (pegarLucros+((qnt - Abs(Position))*(incPT*MinPriceIncrement)))),1);
+						end;
+					if breakEven and (Abs(Position) = (qntBreakEven - 1)) and (qnt > 1) then //mover para o break-even --- VERIFICAR!!!!!!!!!
 						begin
-							if (Abs(Position) > 2) then //pegar lucros 1
-								begin
-									BuyToCoverLimit((PrVen - pegarLucros),(Abs(Position) - 2));
-								end
-							else 
-								begin
-									if (Abs(Position) = 2) then //pegar lucros 2
-										begin
-											BuyToCoverLimit((PrVen - pegarLucros2),(Abs(Position) - 1));
-										end
-									else if breakEven then //mover para o break-even
-										begin							
-											BuyToCoverStop(PrVen,(PrVen + (maxStop * MinPriceIncrement)),Abs(Position));
-										end;
-								end;
+							BuyToCoverStop(PrVen,(PrVen + (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
 				end
 			else if IsBought then
@@ -310,34 +289,13 @@ begin
 						begin
 							SellToCoverAtMarket(Abs(Position));
 						end;
-					if (qnt = 2) then //pegar lucro parcial 2Contratos
+					if (Abs(Position) > 1) then //pegar lucro parcial
 						begin
-							if (Abs(Position) > 1) then //pegar lucros 2Contratos
-								begin
-									SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 1));
-								end
-							else if breakEven then //mover para o break-even
-								begin
-									SellToCoverStop(PrCom,(PrCom - (maxStop * MinPriceIncrement)),Abs(Position));
-								end;
-						end
-					else if (qnt > 2) then //pegar lucros 3+Contratos
+							SellToCoverLimit((PrCom + (pegarLucros + ((qnt - Abs(Position))*(incPT*MinPriceIncrement)))),1);
+						end;
+					if breakEven and (Abs(Position) = (qntBreakEven - 1)) and (qnt > 1) then //mover para o break-even
 						begin
-							if (Abs(Position) > 2) then //pegar lucros 1
-								begin
-									SellToCoverLimit((PrCom + pegarLucros),(Abs(Position) - 2));
-								end
-							else
-								begin
-									if (Abs(Position) = 2) then //pegar lucros 2
-										begin
-											SellToCoverLimit((PrCom + pegarLucros2),(Abs(Position) - 1));
-										end
-									else if breakEven then //mover para o break-even
-										begin
-											SellToCoverStop(PrCom,(PrCom - (maxStop * MinPriceIncrement)),Abs(Position));
-										end;
-								end;
+							SellToCoverStop(PrCom,(PrCom - (maxStop * MinPriceIncrement)),Abs(Position));
 						end;
 				end;
 		end
